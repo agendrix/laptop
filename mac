@@ -137,7 +137,7 @@ brew "puma-dev"
 brew "git-crypt"
 
 # Databases
-brew "postgres", restart_service: :changed
+brew "postgresql@9.6", restart_service: :changed
 brew "redis", restart_service: :changed
 EOF
 
@@ -145,6 +145,12 @@ if brew list | grep --silent "puma-dev"; then
   fancy_echo "Configuring puma-dev..."
   sudo puma-dev -setup
   puma-dev -install
+fi
+
+if brew list | grep --silent "postgresql@9.6"; then
+  fancy_echo "Symlink postgresql@9.6 binary to /usr/local/bin..."
+  brew unlink postgresql@9.6
+  brew link --force postgresql@9.6
 fi
 
 if brew list | grep --silent "qt@5.5"; then
