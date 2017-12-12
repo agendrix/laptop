@@ -144,7 +144,7 @@ EOF
 if brew list | grep --silent "puma-dev"; then
   fancy_echo "Configuring puma-dev..."
   sudo puma-dev -setup
-  puma-dev -install
+  puma-dev -install -d localhost
 fi
 
 if brew list | grep --silent "postgresql@9.6"; then
