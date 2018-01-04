@@ -123,6 +123,9 @@ brew "hub"
 
 # Image manipulation
 brew "imagemagick"
+brew "optipng"
+brew "jpegoptim"
+brew "pngquant"
 
 # Testing
 brew "qt@5.5" if MacOS::Xcode.installed?
