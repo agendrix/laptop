@@ -109,6 +109,7 @@ brew update --force # https://github.com/Homebrew/brew/issues/1151
 brew bundle --file=- <<EOF
 tap "homebrew/services"
 tap "puma/puma"
+tap "TomAnthony/brews"
 
 # Unix
 brew "git"
@@ -120,6 +121,9 @@ brew "zsh"
 
 # GitHub
 brew "hub"
+
+# Terminal
+brew "itermocil"
 
 # Image manipulation
 brew "imagemagick"
