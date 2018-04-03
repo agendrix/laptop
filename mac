@@ -144,7 +144,7 @@ brew "puma-dev"
 brew "git-crypt"
 
 # Databases
-brew "postgresql@9.6", restart_service: :changed
+brew "postgresql", restart_service: :changed
 brew "redis", restart_service: :changed
 EOF
 
