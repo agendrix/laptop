@@ -131,8 +131,8 @@ brew "optipng"
 brew "jpegoptim"
 brew "pngquant"
 
-# Testing
-brew "qt@5.5" if MacOS::Xcode.installed?
+# Testing (qt@5.5 is not supported on Mojave, see https://github.com/Homebrew/homebrew-core/issues/32467)
+# brew "qt@5.5" if MacOS::Xcode.installed?
 
 # Programming languages and package managers
 brew "libyaml" # should come after openssl
@@ -154,10 +154,11 @@ if brew list | grep --silent "puma-dev"; then
   puma-dev -install -d localhost
 fi
 
-if brew list | grep --silent "postgresql@9.6"; then
-  fancy_echo "Symlink postgresql@9.6 binary to /usr/local/bin..."
-  brew unlink postgresql@9.6
-  brew link --force postgresql@9.6
+if brew list | grep --silent "postgresql@10"; then
+  fancy_echo "Symlink postgresql@10 binary to /usr/local/bin..."
+  brew unlink postgresql@10
+  brew link --force postgresql@10
+  ln -s /usr/local/var/postgres /usr/local/var/postgresql@10
 fi
 
 if brew list | grep --silent "qt@5.5"; then
@@ -190,3 +191,5 @@ if [ -f "$HOME/.laptop.local" ]; then
   fancy_echo "Running your customizations from ~/.laptop.local ..."
   . "$HOME/.laptop.local"
 fi
+
+fancy_echo "Script completed. You might need to restart your computer."
