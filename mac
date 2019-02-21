@@ -143,6 +143,9 @@ brew "yarn"
 brew "puma-dev"
 brew "git-crypt"
 
+# Tools
+brew "anycable-go"
+
 # Databases
 brew "postgresql@10", restart_service: :changed
 brew "redis", restart_service: :changed
