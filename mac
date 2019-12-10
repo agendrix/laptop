@@ -131,12 +131,9 @@ brew "optipng"
 brew "jpegoptim"
 brew "pngquant"
 
-# Testing (qt@5.5 is not supported on Mojave, see https://github.com/Homebrew/homebrew-core/issues/32467)
-# brew "qt@5.5" if MacOS::Xcode.installed?
-
 # Programming languages and package managers
 brew "libyaml" # should come after openssl
-brew "node"
+brew "node@10"
 brew "rbenv"
 brew "ruby-build"
 brew "yarn"
@@ -147,7 +144,7 @@ brew "git-crypt"
 brew "anycable-go"
 
 # Databases
-brew "postgresql@10", restart_service: :changed
+brew "postgresql@11", restart_service: :changed
 brew "redis", restart_service: :changed
 EOF
 
@@ -157,17 +154,11 @@ if brew list | grep --silent "puma-dev"; then
   puma-dev -install -d localhost
 fi
 
-if brew list | grep --silent "postgresql@10"; then
-  fancy_echo "Symlink postgresql@10 binary to /usr/local/bin..."
-  brew unlink postgresql@10
-  brew link --force postgresql@10
-  ln -s /usr/local/var/postgres /usr/local/var/postgresql@10
-fi
-
-if brew list | grep --silent "qt@5.5"; then
-  fancy_echo "Symlink qmake binary to /usr/local/bin for Capybara Webkit..."
-  brew unlink qt@5.5
-  brew link --force qt@5.5
+if brew list | grep --silent "postgresql@11"; then
+  fancy_echo "Symlink postgresql@11 binary to /usr/local/bin..."
+  brew unlink postgresql@11
+  brew link --force postgresql@11
+  ln -s /usr/local/var/postgres /usr/local/var/postgresql@11
 fi
 
 fancy_echo "Configuring Ruby ..."
