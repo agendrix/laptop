@@ -118,6 +118,7 @@ brew "the_silver_searcher"
 brew "tmux"
 brew "vim"
 brew "zsh"
+brew "jq"
 
 # GitHub
 brew "hub"
