@@ -139,6 +139,7 @@ brew "ruby-build"
 brew "yarn"
 brew "puma-dev"
 brew "git-crypt"
+brew "gnupg"
 
 # Tools
 brew "anycable-go"
