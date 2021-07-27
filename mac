@@ -122,6 +122,7 @@ brew "jq"
 
 # GitHub
 brew "hub"
+brew "gh"
 
 # Terminal
 brew "itermocil"
