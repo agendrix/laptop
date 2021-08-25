@@ -36,9 +36,9 @@ less ~/laptop.log
 ## Brew cask
 
 ```
-brew cask install google-chrome dropbox 1password alfred qlstephen
-brew cask install divvy vlc sketch figma iterm2 dash sublime-text appcleaner slack bartender the-unarchiver virtualbox kaleidoscope
-brew cask install spotify tunnelblick
+brew install --cask google-chrome dropbox 1password alfred qlstephen
+brew install --cask divvy vlc sketch figma iterm2 dash sublime-text appcleaner slack bartender the-unarchiver virtualbox kaleidoscope
+brew install --cask spotify tunnelblick
 ```
 
 ## Contributing
