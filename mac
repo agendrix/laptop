@@ -252,8 +252,8 @@ if ! rbenv versions | grep --silent $ruby_version; then
   bundle config --global jobs $((number_of_cores - 1))
 
   deactivate_exit_on_error
-  timeout 120 gem update --system
-  if  $? != 0; then
+  
+  if ! timeout 240 gem update --system; then
     fancy_echo "The optionnal command 'gem update --system' has timeout."
   fi
   activate_exit_on_error
