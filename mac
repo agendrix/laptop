@@ -9,6 +9,7 @@ show_help() {
   echo "options:"
   echo "--help                              Show brief help."
   echo "--skip-homebrew-update              Skip Homebrew formulaes and casks update."
+  echo "--ruby-version                      Configure a specific ruby version."
   exit 0;
 }
 
@@ -18,6 +19,10 @@ while test $# -gt 0; do
         show_help;;
     (--skip-homebrew-update)
         SKIP_HOMEBREW_UPDATE="true"
+        shift;;
+    (--ruby-version)
+        RUBY_VERSION="$2"
+        shift
         shift;;
     *)
       show_help;;
@@ -150,7 +155,6 @@ if [ ! $SKIP_HOMEBREW_UPDATE ]; then
   fancy_echo "Updating Homebrew formulae ..."
   brew update --force # https://github.com/Homebrew/brew/issues/1151
 
-  # Unset -e to allow Homebrew dependencies update to fail without exiting
   deactivate_exit_on_error
 
   brew bundle --file=- <<EOF
@@ -220,13 +224,16 @@ if brew_package_exists  "puma-dev"; then
 fi
 
 if brew_package_exists "postgresql@13"; then
-  fancy_echo "Symlink postgresql@13 binary to /usr/local/bin..."
   brew unlink postgresql@13
   brew link --force postgresql@13
-  ln -fs /usr/local/var/postgres $HOMEBREW_PREFIX/var/postgresql@13
 fi
 
-ruby_version="2.7.4"
+if brew_package_exists "node@14"; then
+  brew unlink node@14
+  brew link --overwrite node@14
+fi
+
+ruby_version="${RUBY_VERSION:-$(find_latest_ruby)}"
 if ! rbenv versions | grep --silent $ruby_version; then
   fancy_echo "Configuring Ruby ..."
   safe_append_to_zshrc 'eval "$(rbenv init - --no-rehash)"' 1
@@ -256,6 +263,7 @@ if ! rbenv versions | grep --silent $ruby_version; then
   if ! timeout 240 gem update --system; then
     fancy_echo "The optionnal command 'gem update --system' has timeout."
   fi
+
   activate_exit_on_error
 fi
 
