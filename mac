@@ -166,15 +166,10 @@ if [ ! $SKIP_HOMEBREW_UPDATE ]; then
     brew "git"
     brew "openssl@1.1"
     brew "the_silver_searcher"
-    brew "tmux"
     brew "vim"
     brew "zsh"
     brew "jq"
     brew "bind"
-
-    # GitHub
-    brew "hub"
-    brew "gh"
 
     # Image manipulation
     brew "imagemagick"
