@@ -91,6 +91,33 @@ deactivate_exit_on_error() {
   set +e
 }
 
+install_homebrew() {
+  fancy_echo "Installing Homebrew ..."
+  curl -fsS \
+    'https://raw.githubusercontent.com/Homebrew/install/master/install' | ruby
+
+  HOMEBREW_PREFIX=$(brew --prefix)
+  safe_append_to_zshrc '# recommended by brew doctor'
+  safe_append_to_zshrc 'export PATH="$HOMEBREW_PREFIX/bin:$PATH"' 1
+  export PATH="$HOMEBREW_PREFIX/bin:$PATH"
+}
+
+set_homebrew_owner() {
+  fancy_echo "Seting Homebrew dependencies owner ..."
+  HOMEBREW_PREFIX=$(brew --prefix)
+  
+  sudo chflags norestricted "$HOMEBREW_PREFIX"
+  sudo chown -R "$LOGNAME:admin" "$HOMEBREW_PREFIX"
+
+  # /usr/local/opt was the pre-m1 homebrew opt directory
+  #  some libs depend on it existing
+  OPT_SYM_LINK=/usr/local/opt
+  if ! [ -d $OPT_SYM_LINK ]; then
+    sudo ln -s "$HOMEBREW_PREFIX/opt" $OPT_SYM_LINK
+    sudo chown -R "$LOGNAME:admin" $OPT_SYM_LINK
+  fi
+}
+
 #
 # Main
 #
@@ -107,18 +134,6 @@ fi
 
 safe_append_to_zshrc 'export PATH="$HOME/.bin:$PATH"'
 
-HOMEBREW_PREFIX=$(brew --prefix)
-
-if [ -d "$HOMEBREW_PREFIX" ]; then
-  if ! [ -r "$HOMEBREW_PREFIX" ]; then
-    sudo chown -R "$LOGNAME:admin" "$HOMEBREW_PREFIX"
-  fi
-else
-  sudo mkdir "$HOMEBREW_PREFIX"
-  sudo chflags norestricted "$HOMEBREW_PREFIX"
-  sudo chown -R "$LOGNAME:admin" "$HOMEBREW_PREFIX"
-fi
-
 case "$SHELL" in
   */zsh)
     if [ "$(which zsh)" != '/usr/local/bin/zsh' ] ; then
@@ -131,37 +146,23 @@ case "$SHELL" in
 esac
 
 if ! command -v brew >/dev/null; then
-  fancy_echo "Installing Homebrew ..."
-    curl -fsS \
-      'https://raw.githubusercontent.com/Homebrew/install/master/install' | ruby
-
-    safe_append_to_zshrc '# recommended by brew doctor'
-
-    safe_append_to_zshrc 'export PATH="$HOMEBREW_PREFIX/bin:$PATH"' 1
-
-    export PATH="$HOMEBREW_PREFIX/bin:$PATH"
+  install_homebrew
 fi
+
+set_homebrew_owner
 
 if brew list | grep -Fq brew-cask; then
   fancy_echo "Uninstalling old Homebrew-Cask ..."
   brew uninstall --force brew-cask
 fi
 
-# /usr/local/opt was the pre-m1 homebrew opt directory
-# some libs depend on it existing
-OPT_SYM_LINK=/usr/local/opt
-if [ ! -d $OPT_SYM_LINK ]; then
-    sudo ln -s $(brew --prefix)/opt $OPT_SYM_LINK
-    sudo chown -R $(whoami):admin $OPT_SYM_LINK
-fi
-
 if [ ! $SKIP_HOMEBREW_UPDATE ]; then
   fancy_echo "Updating Homebrew formulae ..."
-  brew update --force # https://github.com/Homebrew/brew/issues/1151
+  brew update --quiet --force # https://github.com/Homebrew/brew/issues/1151
 
   deactivate_exit_on_error
 
-  brew bundle --file=- <<EOF
+  brew bundle --quiet --file=- <<EOF
     tap "homebrew/services"
     tap "puma/puma"
     tap "hashicorp/tap"
@@ -216,25 +217,27 @@ EOF
   activate_exit_on_error
 fi
 
-if brew_package_exists  "puma-dev"; then
+if brew_package_exists "puma-dev"; then
   fancy_echo "Configuring puma-dev..."
   sudo puma-dev -setup
   puma-dev -install -d localhost
 fi
 
 if brew_package_exists "postgresql@13"; then
+  fancy_echo "Configuring Postgresql..."
   brew unlink postgresql@13
   brew link --force postgresql@13
 fi
 
 if brew_package_exists "node@14"; then
+  fancy_echo "Configuring Node..."
   brew unlink node@14
   brew link --overwrite node@14
 fi
 
 ruby_version="${RUBY_VERSION:-2.7.4}"
 if ! rbenv versions | grep --silent $ruby_version; then
-  fancy_echo "Configuring Ruby ..."
+  fancy_echo "Configuring Ruby..."
   safe_append_to_zshrc 'eval "$(rbenv init - --no-rehash)"' 1
   eval "$(rbenv init -)"
 
@@ -265,7 +268,6 @@ if ! rbenv versions | grep --silent $ruby_version; then
 
   activate_exit_on_error
 fi
-
 
 if [ -f "$HOME/.laptop.local" ]; then
   fancy_echo "Running your customizations from ~/.laptop.local ..."
