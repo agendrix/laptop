@@ -192,9 +192,6 @@ if [ ! $SKIP_HOMEBREW_UPDATE ]; then
     brew "git-crypt"
     brew "gnupg"
 
-    # Tools
-    brew "anycable-go"
-
     # Databases
     brew "postgresql@13", restart_service: :changed
     brew "redis", restart_service: :changed
@@ -215,6 +212,11 @@ if [ ! $SKIP_HOMEBREW_UPDATE ]; then
     cask "virtualbox"
 EOF
   activate_exit_on_error
+  
+  echo "Installing anycable-go"
+  # Using version v1.0.5 since v1.1.0 drop support for AnyCable RPC v0.6.
+  sudo curl -LJ https://github.com/anycable/anycable-go/releases/download/v1.0.5/anycable-go-darwin-amd64 -o /usr/local/bin/anycable-go
+  sudo chmod +x /usr/local/bin/anycable-go
 fi
 
 if brew_package_exists "puma-dev"; then
