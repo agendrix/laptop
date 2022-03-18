@@ -33,14 +33,6 @@ Optionally, review the log:
 less ~/laptop.log
 ```
 
-## Brew cask
-
-```
-brew install --cask google-chrome dropbox 1password alfred qlstephen
-brew install --cask divvy vlc sketch figma iterm2 dash sublime-text appcleaner slack bartender the-unarchiver virtualbox kaleidoscope
-brew install --cask spotify tunnelblick
-```
-
 ## Contributing
 
 1. Fork the repository on Github
