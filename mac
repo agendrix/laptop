@@ -107,7 +107,7 @@ set_homebrew_owner() {
   HOMEBREW_PREFIX=$(brew --prefix)
 
   sudo chflags norestricted "$HOMEBREW_PREFIX"
-  sudo chown -R "$LOGNAME:admin" "$HOMEBREW_PREFIX"
+  # sudo chown -R "$LOGNAME:admin" "$HOMEBREW_PREFIX"
 
   # /usr/local/opt was the pre-m1 homebrew opt directory
   #  some libs depend on it existing
