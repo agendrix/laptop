@@ -175,6 +175,7 @@ if [ ! $SKIP_HOMEBREW_UPDATE ]; then
     brew "zsh"
     brew "jq"
     brew "bind"
+    brew "gdal"
 
     # Image manipulation
     brew "imagemagick"
@@ -201,6 +202,9 @@ if [ ! $SKIP_HOMEBREW_UPDATE ]; then
 
     # AWS
     brew  "awscli"
+
+    # Github
+    brew "gh  
 
     # Terraform
     brew "hashicorp/tap/terraform"
