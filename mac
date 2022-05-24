@@ -204,7 +204,7 @@ if [ ! $SKIP_HOMEBREW_UPDATE ]; then
     brew  "awscli"
 
     # Github
-    brew "gh  
+    brew "gh"  
 
     # Terraform
     brew "hashicorp/tap/terraform"
