@@ -70,6 +70,18 @@ update_shell() {
   sudo chsh -s "$shell_path" "$USER"
 }
 
+install_rosetta_if_required() {
+  # Check if running a new Apple silicon/arm64 chip, which requires rosetta for Intel software 
+  local OS ARCH
+  OS="$(uname)"
+  ARCH="$(uname -m)"
+  if [ "${OS}" = "Darwin" ] && [ "${ARCH}" = "arm64" ];
+  then
+    fancy_echo "Installing rosetta..."
+    echo "A" | softwareupdate --install-rosetta
+  fi
+}
+
 gem_install_or_update() {
   if gem list "$1" --installed > /dev/null; then
     gem update "$@"
@@ -144,6 +156,8 @@ case "$SHELL" in
     update_shell
     ;;
 esac
+
+install_rosetta_if_required
 
 if ! command -v brew >/dev/null; then
   install_homebrew
