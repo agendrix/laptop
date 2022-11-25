@@ -108,7 +108,21 @@ install_homebrew() {
   curl -fsS \
     'https://raw.githubusercontent.com/Homebrew/install/master/install' | ruby
 
-  HOMEBREW_PREFIX=$(brew --prefix)
+  HOMEBREW_PREFIX=""
+  if ! type "brew" > /dev/null; then
+    if [ -d "/opt/homebrew" ]; then
+      # Check for macOS ARM
+      HOMEBREW_PREFIX="/opt/homebrew"
+    elif [ -d "/usr/local/homebrew" ]; then
+      # Check for macOS Intel
+      HOMEBREW_PREFIX="/usr/local/Homebrew"
+    elif [ -d "/home/linuxbrew/.linuxbrew" ]; then
+      # Check for Linux
+      HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
+    fi
+  else
+    HOMEBREW_PREFIX=$(brew --prefix)
+  fi
   safe_append_to_zshrc '# recommended by brew doctor'
   safe_append_to_zshrc 'export PATH="$HOMEBREW_PREFIX/bin:$PATH"' 1
   export PATH="$HOMEBREW_PREFIX/bin:$PATH"
