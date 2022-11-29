@@ -204,6 +204,7 @@ if [ ! $SKIP_HOMEBREW_UPDATE ]; then
     brew "jq"
     brew "bind"
     brew "gdal"
+    brew "cmake"
 
     # Image manipulation
     brew "imagemagick"
