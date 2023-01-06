@@ -39,15 +39,19 @@ fancy_echo() {
   printf "\n$fmt\n" "$@"
 }
 
-safe_append_to_zshrc() {
-  local text="$1" zshrc
-  local skip_new_line="${2:-0}"
-
+zshrc_path() {
   if [ -w "$HOME/.zshrc.local" ]; then
     zshrc="$HOME/.zshrc.local"
   else
     zshrc="$HOME/.zshrc"
   fi
+  echo $zshrc
+}
+
+safe_append_to_zshrc() {
+  local text="$1" zshrc
+  local skip_new_line="${2:-0}"
+  zshrc=$(zshrc_path)
 
   if ! grep -Fqs "$text" "$zshrc"; then
     if [ "$skip_new_line" -eq 1 ]; then
@@ -61,13 +65,14 @@ safe_append_to_zshrc() {
 update_shell() {
   local shell_path;
   shell_path="$(which zsh)"
-
-  fancy_echo "Changing your shell to zsh ..."
-  if ! grep "$shell_path" /etc/shells > /dev/null 2>&1 ; then
-    fancy_echo "Adding '$shell_path' to /etc/shells"
-    sudo sh -c "echo $shell_path >> /etc/shells"
+  if [ $shell_path != $SHELL ]; then
+    fancy_echo "Changing your shell to zsh ..."
+    if ! grep "$shell_path" /etc/shells > /dev/null 2>&1 ; then
+      fancy_echo "Adding '$shell_path' to /etc/shells"
+      sudo sh -c "echo $shell_path >> /etc/shells"
+    fi
+    sudo chsh -s "$shell_path" "$USER"
   fi
-  sudo chsh -s "$shell_path" "$USER"
 }
 
 install_rosetta_if_required() {
@@ -75,10 +80,12 @@ install_rosetta_if_required() {
   local OS ARCH
   OS="$(uname)"
   ARCH="$(uname -m)"
-  if [ "${OS}" = "Darwin" ] && [ "${ARCH}" = "arm64" ];
-  then
-    fancy_echo "Installing rosetta..."
-    echo "A" | softwareupdate --install-rosetta
+  if [ "${OS}" = "Darwin" ] && [ "${ARCH}" = "arm64" ]; then
+    # Use arch binary to check if x86_64 code can run, if so, skip installation of Rosetta
+    if ! arch -x86_64 /usr/bin/true 2> /dev/null; then
+      fancy_echo "Installing rosetta..."
+      echo "A" | softwareupdate --install-rosetta --agree-license
+    fi
   fi
 }
 
@@ -105,8 +112,7 @@ deactivate_exit_on_error() {
 
 install_homebrew() {
   fancy_echo "Installing Homebrew ..."
-  curl -fsS \
-    'https://raw.githubusercontent.com/Homebrew/install/master/install' | ruby
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
   HOMEBREW_PREFIX=""
   if ! type "brew" > /dev/null; then
@@ -123,9 +129,14 @@ install_homebrew() {
   else
     HOMEBREW_PREFIX=$(brew --prefix)
   fi
+  safe_append_to_zshrc '# Set PATH, MANPATH, etc., for Homebrew.'
+  safe_append_to_zshrc 'eval "$(/opt/homebrew/bin/brew shellenv)"'
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+  
   safe_append_to_zshrc '# recommended by brew doctor'
   safe_append_to_zshrc 'export PATH="$HOMEBREW_PREFIX/bin:$PATH"' 1
   export PATH="$HOMEBREW_PREFIX/bin:$PATH"
+  source $HOME/zshrc_path
 }
 
 set_homebrew_owner() {
@@ -160,16 +171,7 @@ fi
 
 safe_append_to_zshrc 'export PATH="$HOME/.bin:$PATH"'
 
-case "$SHELL" in
-  */zsh)
-    if [ "$(which zsh)" != '/usr/local/bin/zsh' ] ; then
-      update_shell
-    fi
-    ;;
-  *)
-    update_shell
-    ;;
-esac
+update_shell
 
 install_rosetta_if_required
 
@@ -200,7 +202,6 @@ if [ ! $SKIP_HOMEBREW_UPDATE ]; then
     brew "openssl@1.1"
     brew "the_silver_searcher"
     brew "vim"
-    brew "zsh"
     brew "jq"
     brew "bind"
     brew "gdal"
@@ -238,6 +239,9 @@ if [ ! $SKIP_HOMEBREW_UPDATE ]; then
     # Terraform
     brew "hashicorp/tap/terraform"
 
+    # Websockets
+    brew "anycable-go"
+
     # Casks
     cask "google-chrome"
     cask "visual-studio-code"
@@ -248,10 +252,6 @@ if [ ! $SKIP_HOMEBREW_UPDATE ]; then
     cask "virtualbox"
 EOF
   activate_exit_on_error
-
-  echo "Installing anycable-go"
-  sudo curl -LJ https://github.com/anycable/anycable-go/releases/download/v1.2.1/anycable-go-darwin-arm64 -o /usr/local/bin/anycable-go
-  sudo chmod +x /usr/local/bin/anycable-go
 fi
 
 if brew_package_exists "puma-dev"; then
