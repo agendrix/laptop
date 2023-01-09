@@ -206,6 +206,7 @@ if [ ! $SKIP_HOMEBREW_UPDATE ]; then
     brew "bind"
     brew "gdal"
     brew "cmake"
+    brew "pkg-config"
 
     # Image manipulation
     brew "imagemagick"
