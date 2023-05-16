@@ -84,7 +84,7 @@ install_rosetta_if_required() {
     # Use arch binary to check if x86_64 code can run, if so, skip installation of Rosetta
     if ! arch -x86_64 /usr/bin/true 2> /dev/null; then
       fancy_echo "Installing rosetta..."
-      echo "A" | softwareupdate --install-rosetta --agree-license
+      echo "A" | softwareupdate --install-rosetta
     fi
   fi
 }
