@@ -242,15 +242,6 @@ if [ ! $SKIP_HOMEBREW_UPDATE ]; then
 
     # Websockets
     brew "anycable-go"
-
-    # Casks
-    cask "google-chrome"
-    cask "visual-studio-code"
-    cask "slack"
-    cask "iterm2"
-    cask "figma"
-    cask "1password"
-    cask "virtualbox"
 EOF
   activate_exit_on_error
 fi
