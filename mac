@@ -136,7 +136,7 @@ install_homebrew() {
   safe_append_to_zshrc '# recommended by brew doctor'
   safe_append_to_zshrc 'export PATH="$HOMEBREW_PREFIX/bin:$PATH"' 1
   export PATH="$HOMEBREW_PREFIX/bin:$PATH"
-  source $HOME/zshrc_path
+  source $(zshrc_path)
 }
 
 set_homebrew_owner() {
@@ -216,7 +216,7 @@ if [ ! $SKIP_HOMEBREW_UPDATE ]; then
 
     # Programming languages and package managers
     brew "libyaml" # should come after openssl
-    brew "node@18"
+    brew "node@18", link: true
     brew "rbenv"
     brew "ruby-build"
     brew "yarn"
@@ -228,8 +228,8 @@ if [ ! $SKIP_HOMEBREW_UPDATE ]; then
     brew "watchman"
 
     # Databases
-    brew "postgresql@13", restart_service: :changed
-    brew "redis", restart_service: :changed
+    brew "postgresql@13", restart_service: true, link: true
+    brew "redis", restart_service: true
 
     # AWS
     brew  "awscli"
