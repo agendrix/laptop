@@ -249,7 +249,7 @@ fi
 if brew_package_exists "puma-dev"; then
   fancy_echo "Configuring puma-dev..."
   sudo puma-dev -setup
-  puma-dev -install -d localhost
+  SUDO_USER="" puma-dev -install -d localhost
 fi
 
 if brew_package_exists "postgresql@13"; then
