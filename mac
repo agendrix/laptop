@@ -132,11 +132,6 @@ install_homebrew() {
   safe_append_to_zshrc '# Set PATH, MANPATH, etc., for Homebrew.'
   safe_append_to_zshrc 'eval "$(/opt/homebrew/bin/brew shellenv)"'
   eval "$(/opt/homebrew/bin/brew shellenv)"
-  
-  safe_append_to_zshrc '# recommended by brew doctor'
-  safe_append_to_zshrc 'export PATH="$HOMEBREW_PREFIX/bin:$PATH"' 1
-  export PATH="$HOMEBREW_PREFIX/bin:$PATH"
-  source $(zshrc_path)
 }
 
 set_homebrew_owner() {
