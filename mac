@@ -191,6 +191,7 @@ if [ ! $SKIP_HOMEBREW_UPDATE ]; then
     tap "homebrew/services"
     tap "puma/puma"
     tap "hashicorp/tap"
+    tap "bbc/audiowaveform"
 
     # Unix
     brew "git"
@@ -208,6 +209,10 @@ if [ ! $SKIP_HOMEBREW_UPDATE ]; then
     brew "optipng"
     brew "jpegoptim"
     brew "pngquant"
+
+    # Audio Manipulation
+    brew "ffmpeg"
+    brew "audiowaveform"
 
     # Programming languages and package managers
     brew "libyaml" # should come after openssl
