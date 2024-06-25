@@ -152,7 +152,7 @@ set_homebrew_owner() {
 
 install_rust() {
   fancy_echo "Installing rust ..."
-  /bin/bash -c "$(curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh)"
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 }
 
 #
