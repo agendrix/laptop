@@ -1,0 +1,61 @@
+#!/bin/sh
+
+#############
+## Helpers ##
+#############
+
+# Helper shortcut to access git projects.
+# Use `p <project_folder>`, ex.: `p web`
+p()  { cd "$HOME/Projects/$1" || return; }
+_p() { _files -W ~/Projects -/; }
+compdef _p p
+
+#############
+## Exports ##
+#############
+
+# Misc env variables
+export EDITOR='code --wait'
+export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+export RUBYOPT='--enable-yjit -W:deprecated -W:performance'
+
+# Puppeteer M1 https://github.com/puppeteer/puppeteer/issues/6622#issuecomment-928311570
+CHROMIUM_PATH=$(which chromium)
+echo "$CHROMIUM_PATH" | grep -q "not found" && echo "chromium not found, run \"brew install chromium --no-quarantine\" (needed for Puppeteer)"
+export PUPPETEER_EXECUTABLE_PATH="$CHROMIUM_PATH"
+export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
+# Ruby & MacOS bug https://github.com/rails/rails/issues/38560
+export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+
+export NODE_OPTIONS="--max-old-space-size=6144"
+
+# Node installation setup
+# (you can manage node with Homebrew OR NVM)
+#
+# # Homebrew setup:
+export PATH="/usr/local/opt/node@18/bin:$PATH"
+export LDFLAGS="-L/usr/local/opt/node@18/lib" 
+export CPPFLAGS="-I/usr/local/opt/node@18/include"
+#
+# # NVM setup:
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+#############
+## Aliases ##
+#############
+
+alias be="bundle exec"
+alias dbreset="be rails db:drop db:create db:schema:load db:migrate db:seed"
+alias reset-azeroth="be rails azeroth:reset"
+alias sync-graphql="be rails graphql:dump_schema && yarn graphql-types"
+
+alias rails-console="be rails c"
+alias tail-logs="tail -f log/development.log"
+
+# Rails/Sorbet typing
+alias sync-i18n-types="yarn i18n-types"
+alias sync-rbis-dsl="be rails tapioca:dsl"
+alias sync-rbis-test="be rails rbi:test_dsl"
