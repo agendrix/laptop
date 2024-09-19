@@ -45,15 +45,6 @@ fancy_echo() {
   printf "\n$fmt\n" "$@"
 }
 
-zshrc_path() {
-  if [ -w "$HOME/.zshrc.local" ]; then
-    zshrc="$HOME/.zshrc.local"
-  else
-    zshrc="$HOME/.zshrc"
-  fi
-  echo "$zshrc"
-}
-
 update_shell() {
   # shellcheck disable=SC3043
   local shell_path;
