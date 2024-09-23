@@ -15,6 +15,6 @@ export PATH="/usr/local/bin:$PATH"
 eval "$(rbenv init - --no-rehash)"
 
 # Rust
-[[ -f $HOME/.cargo/env ]] source "$HOME/.cargo/env"
+[[ -f $HOME/.cargo/env ]] && source "$HOME/.cargo/env"
 
-[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+[[ -f $HOME/.zshrc.local ]] && source ~/.zshrc.local

@@ -272,10 +272,24 @@ if ! rbenv versions | grep --silent "$ruby_version"; then
 fi
 
 if [ ! "$SKIP_ZSHRC_SETUP" ]; then
+  # shellcheck disable=SC3043
+  local files_backed_up=false
+
   fancy_echo "Configuring .zshrc and .zshrc.local ..."
+
+  if [ -f "$HOME/.zshrc" ] || [ -f "$HOME/.zshrc.local" ]; then
+    fancy_echo "Backing up your current .zshrc and .zshrc.local ..."
+    [ -f "$HOME/.zshrc" ] && mv "$HOME/.zshrc" "$HOME/.zshrc.old"
+    [ -f "$HOME/.zshrc.local" ] && mv "$HOME/.zshrc.local" "$HOME/.zshrc.local.old"
+    files_backed_up=true
+  fi
 
   curl -o "$HOME/.zshrc" https://raw.githubusercontent.com/agendrix/laptop/master/.zshrc
   curl -o "$HOME/.zshrc.local" https://raw.githubusercontent.com/agendrix/laptop/master/.zshrc.local
+
+  if [ "$files_backed_up" = true ]; then
+    fancy_echo "Your old files have been backed up to ${HOME}/.zshrc.old and ${HOME}/.zshrc.local.old. Review them and add any needed changes to the new standardized files."
+  fi
 fi
 
 if [ -f "$HOME/.laptop.local" ]; then
