@@ -9,6 +9,7 @@ show_help() {
   echo "options:"
   echo "--help                              Show brief help."
   echo "--skip-homebrew-update              Skip Homebrew formulaes and casks update."
+  echo "--skip-zshrc-setup                    Skip configuring .zshrc and .zshrc.local."
   echo "--ruby-version                      Configure a specific ruby version."
   exit 0;
 }
@@ -19,6 +20,9 @@ while test $# -gt 0; do
         show_help;;
     (--skip-homebrew-update)
         SKIP_HOMEBREW_UPDATE="true"
+        shift;;
+    (--skip-zshrc-setup)
+        SKIP_ZSHRC_SETUP="true"
         shift;;
     (--ruby-version)
         RUBY_VERSION="$2"
@@ -34,38 +38,18 @@ done
 #
 
 fancy_echo() {
+  # shellcheck disable=SC3043
   local fmt="$1"; shift
 
+  # shellcheck disable=SC2059
   printf "\n$fmt\n" "$@"
 }
 
-zshrc_path() {
-  if [ -w "$HOME/.zshrc.local" ]; then
-    zshrc="$HOME/.zshrc.local"
-  else
-    zshrc="$HOME/.zshrc"
-  fi
-  echo $zshrc
-}
-
-safe_append_to_zshrc() {
-  local text="$1" zshrc
-  local skip_new_line="${2:-0}"
-  zshrc=$(zshrc_path)
-
-  if ! grep -Fqs "$text" "$zshrc"; then
-    if [ "$skip_new_line" -eq 1 ]; then
-      printf "%s\n" "$text" >> "$zshrc"
-    else
-      printf "\n%s\n" "$text" >> "$zshrc"
-    fi
-  fi
-}
-
 update_shell() {
+  # shellcheck disable=SC3043
   local shell_path;
   shell_path="$(which zsh)"
-  if [ $shell_path != $SHELL ]; then
+  if [ "$shell_path" != "$SHELL" ]; then
     fancy_echo "Changing your shell to zsh ..."
     if ! grep "$shell_path" /etc/shells > /dev/null 2>&1 ; then
       fancy_echo "Adding '$shell_path' to /etc/shells"
@@ -77,6 +61,7 @@ update_shell() {
 
 install_rosetta_if_required() {
   # Check if running a new Apple silicon/arm64 chip, which requires rosetta for Intel software
+  # shellcheck disable=SC3043
   local OS ARCH
   OS="$(uname)"
   ARCH="$(uname -m)"
@@ -114,23 +99,6 @@ install_homebrew() {
   fancy_echo "Installing Homebrew ..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-  HOMEBREW_PREFIX=""
-  if ! type "brew" > /dev/null; then
-    if [ -d "/opt/homebrew" ]; then
-      # Check for macOS ARM
-      HOMEBREW_PREFIX="/opt/homebrew"
-    elif [ -d "/usr/local/homebrew" ]; then
-      # Check for macOS Intel
-      HOMEBREW_PREFIX="/usr/local/Homebrew"
-    elif [ -d "/home/linuxbrew/.linuxbrew" ]; then
-      # Check for Linux
-      HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
-    fi
-  else
-    HOMEBREW_PREFIX=$(brew --prefix)
-  fi
-  safe_append_to_zshrc '# Set PATH, MANPATH, etc., for Homebrew.'
-  safe_append_to_zshrc 'eval "$(/opt/homebrew/bin/brew shellenv)"'
   eval "$(/opt/homebrew/bin/brew shellenv)"
 }
 
@@ -165,11 +133,10 @@ if [ ! -d "$HOME/.bin/" ]; then
   mkdir "$HOME/.bin"
 fi
 
-if [ ! -f "$HOME/.zshrc" ]; then
-  touch "$HOME/.zshrc"
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+  fancy_echo "Installing Oh My Zsh ..."
+  git clone https://github.com/robbyrussell/oh-my-zsh.git "$HOME/.oh-my-zsh"
 fi
-
-safe_append_to_zshrc 'export PATH="$HOME/.bin:$PATH"'
 
 update_shell
 
@@ -188,7 +155,7 @@ if brew list | grep -Fq brew-cask; then
   brew uninstall --force brew-cask
 fi
 
-if [ ! $SKIP_HOMEBREW_UPDATE ]; then
+if [ ! "$SKIP_HOMEBREW_UPDATE" ]; then
   fancy_echo "Updating Homebrew formulae ..."
   brew update --quiet --force # https://github.com/Homebrew/brew/issues/1151
 
@@ -272,9 +239,8 @@ if brew_package_exists "node@18"; then
 fi
 
 ruby_version="${RUBY_VERSION:-3.3.0}"
-if ! rbenv versions | grep --silent $ruby_version; then
+if ! rbenv versions | grep --silent "$ruby_version"; then
   fancy_echo "Configuring Ruby..."
-  safe_append_to_zshrc 'eval "$(rbenv init - --no-rehash)"' 1
   eval "$(rbenv init -)"
 
   if ! rbenv versions | grep -Fq "$ruby_version"; then
@@ -305,8 +271,30 @@ if ! rbenv versions | grep --silent $ruby_version; then
   activate_exit_on_error
 fi
 
+if [ ! "$SKIP_ZSHRC_SETUP" ]; then
+  # shellcheck disable=SC3043
+  local files_backed_up=false
+
+  fancy_echo "Configuring .zshrc and .zshrc.local ..."
+
+  if [ -f "$HOME/.zshrc" ] || [ -f "$HOME/.zshrc.local" ]; then
+    fancy_echo "Backing up your current .zshrc and .zshrc.local ..."
+    [ -f "$HOME/.zshrc" ] && mv "$HOME/.zshrc" "$HOME/.zshrc.old"
+    [ -f "$HOME/.zshrc.local" ] && mv "$HOME/.zshrc.local" "$HOME/.zshrc.local.old"
+    files_backed_up=true
+  fi
+
+  curl -o "$HOME/.zshrc" https://raw.githubusercontent.com/agendrix/laptop/master/.zshrc
+  curl -o "$HOME/.zshrc.local" https://raw.githubusercontent.com/agendrix/laptop/master/.zshrc.local
+
+  if [ "$files_backed_up" = true ]; then
+    fancy_echo "Your old files have been backed up to ${HOME}/.zshrc.old and ${HOME}/.zshrc.local.old. Review them and add any needed changes to the new standardized files."
+  fi
+fi
+
 if [ -f "$HOME/.laptop.local" ]; then
   fancy_echo "Running your customizations from ~/.laptop.local ..."
+  # shellcheck disable=SC1091
   . "$HOME/.laptop.local"
 fi
 
