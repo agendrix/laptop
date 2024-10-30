@@ -202,7 +202,7 @@ if [ ! "$SKIP_HOMEBREW_UPDATE" ]; then
     brew "watchman"
 
     # Databases
-    brew "postgresql@15", restart_service: true, link: true
+    brew "postgresql@16", restart_service: true, link: true
     brew "redis", restart_service: true
 
     # AWS
@@ -226,10 +226,10 @@ if brew_package_exists "puma-dev"; then
   SUDO_USER="" puma-dev -install -d localhost
 fi
 
-if brew_package_exists "postgresql@15"; then
+if brew_package_exists "postgresql@16"; then
   fancy_echo "Configuring Postgresql..."
-  brew unlink postgresql@15
-  brew link --force postgresql@15
+  brew unlink postgresql@16
+  brew link --force postgresql@16
 fi
 
 if brew_package_exists "node@18"; then
