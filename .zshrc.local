@@ -35,13 +35,16 @@ export NODE_OPTIONS="--max-old-space-size=6144"
 #
 # # Homebrew setup:
 export PATH="/usr/local/opt/node@18/bin:$PATH"
-export LDFLAGS="-L/usr/local/opt/node@18/lib" 
+export LDFLAGS="-L/usr/local/opt/node@18/lib"
 export CPPFLAGS="-I/usr/local/opt/node@18/include"
 #
 # # NVM setup:
 # export NVM_DIR="$HOME/.nvm"
 # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 # [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Sidekiq Pro
+export BUNDLE_GEMS__CONTRIBSYS__COM=6c4f91ce:48035ad6
 
 #############
 ## Aliases ##
