@@ -169,7 +169,7 @@ if [ ! "$SKIP_HOMEBREW_UPDATE" ]; then
 
     # Unix
     brew "git"
-    brew "openssl@1.1"
+    brew "openssl@3.4.0"
     brew "the_silver_searcher"
     brew "vim"
     brew "jq"
