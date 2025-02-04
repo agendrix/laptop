@@ -244,7 +244,7 @@ if ! rbenv versions | grep --silent "$ruby_version"; then
   eval "$(rbenv init -)"
 
   if ! rbenv versions | grep -Fq "$ruby_version"; then
-    OPEN_SSL_PREFIX=$(brew --prefix openssl@1.1)
+    OPEN_SSL_PREFIX=$(brew --prefix openssl@3.4.0)
 
     PATH="$OPEN_SSL_PREFIX/bin:$PATH" \
     LDFLAGS="-L$OPEN_SSL_PREFIX/lib" \
