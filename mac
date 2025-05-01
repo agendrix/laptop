@@ -162,7 +162,6 @@ if [ ! "$SKIP_HOMEBREW_UPDATE" ]; then
   deactivate_exit_on_error
 
   brew bundle --quiet --file=- <<EOF
-    tap "homebrew/services"
     tap "puma/puma"
     tap "hashicorp/tap"
     tap "bbc/audiowaveform"
