@@ -168,7 +168,7 @@ if [ ! "$SKIP_HOMEBREW_UPDATE" ]; then
 
     # Unix
     brew "git"
-    brew "openssl@3.4"
+    brew "openssl@3"
     brew "the_silver_searcher"
     brew "rg"
     brew "vim"
@@ -245,7 +245,7 @@ if ! rbenv versions | grep --silent "$ruby_version"; then
   eval "$(rbenv init -)"
 
   if ! rbenv versions | grep -Fq "$ruby_version"; then
-    OPEN_SSL_PREFIX=$(brew --prefix openssl@3.4)
+    OPEN_SSL_PREFIX=$(brew --prefix openssl@3)
 
     PATH="$OPEN_SSL_PREFIX/bin:$PATH" \
     LDFLAGS="-L$OPEN_SSL_PREFIX/lib" \
