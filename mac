@@ -103,7 +103,7 @@ install_homebrew() {
 }
 
 set_homebrew_owner() {
-  fancy_echo "Seting Homebrew dependencies owner ..."
+  fancy_echo "Setting Homebrew dependencies owner ..."
   HOMEBREW_PREFIX=$(brew --prefix)
 
   sudo chflags norestricted "$HOMEBREW_PREFIX"
