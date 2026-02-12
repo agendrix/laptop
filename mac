@@ -195,7 +195,7 @@ if [ ! "$SKIP_HOMEBREW_UPDATE" ]; then
     brew "rbenv"
     brew "ruby-build"
     brew "yarn"
-    brew "puma-dev"
+    brew "puma/puma/puma-dev"
     brew "git-crypt"
     brew "gnupg"
 
