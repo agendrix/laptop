@@ -217,6 +217,9 @@ if [ ! "$SKIP_HOMEBREW_UPDATE" ]; then
 
     # Websockets
     brew "anycable-go"
+
+    brew "claude-code"
+    brew "handy"
 EOF
   activate_exit_on_error
 fi
