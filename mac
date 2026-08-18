@@ -121,6 +121,13 @@ set_homebrew_owner() {
 install_rust() {
   fancy_echo "Installing rust ..."
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+  [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+}
+
+install_claude_code() {
+  fancy_echo "Installing Claude Code ..."
+  curl -fsSL https://claude.ai/install.sh | bash
 }
 
 #
@@ -143,6 +150,10 @@ update_shell
 install_rosetta_if_required
 
 install_rust
+
+if ! command -v claude >/dev/null; then
+  install_claude_code
+fi
 
 if ! command -v brew >/dev/null; then
   install_homebrew
@@ -195,7 +206,7 @@ if [ ! "$SKIP_HOMEBREW_UPDATE" ]; then
     brew "rbenv"
     brew "ruby-build"
     brew "yarn"
-    brew "puma/puma/puma-dev"
+    brew "puma/puma/puma-dev", trusted: true
     brew "git-crypt"
     brew "gnupg"
 
@@ -213,13 +224,12 @@ if [ ! "$SKIP_HOMEBREW_UPDATE" ]; then
     brew "gh"
 
     # Terraform
-    brew "hashicorp/tap/terraform"
+    brew "hashicorp/tap/terraform", trusted: true
 
     # Websockets
     brew "anycable-go"
 
-    brew "claude-code"
-    brew "handy"
+    cask "handy"
 EOF
   activate_exit_on_error
 fi
