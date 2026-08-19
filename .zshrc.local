@@ -34,9 +34,9 @@ export NODE_OPTIONS="--max-old-space-size=6144"
 # (you can manage node with Homebrew OR NVM)
 #
 # # Homebrew setup:
-export PATH="/usr/local/opt/node@18/bin:$PATH"
-export LDFLAGS="-L/usr/local/opt/node@18/lib" 
-export CPPFLAGS="-I/usr/local/opt/node@18/include"
+export PATH="/usr/local/opt/node@22/bin:$PATH"
+export LDFLAGS="-L/usr/local/opt/node@22/lib" 
+export CPPFLAGS="-I/usr/local/opt/node@22/include"
 #
 # # NVM setup:
 # export NVM_DIR="$HOME/.nvm"
