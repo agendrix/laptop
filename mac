@@ -198,7 +198,7 @@ if [ ! "$SKIP_HOMEBREW_UPDATE" ]; then
 
     # Audio Manipulation
     brew "ffmpeg"
-    brew "audiowaveform"
+    brew "bbc/audiowaveform/audiowaveform", trusted: true
 
     # Programming languages and package managers
     brew "libyaml" # should come after openssl
